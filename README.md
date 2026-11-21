@@ -1,1 +1,164 @@
-# folio-releases
+# Folio
+
+Folio is a Mac app for keeping your personal accounts in a folder of
+plain-text [Beancount](https://beancount.github.io/) files, with Filio, a
+friendly AI bookkeeper, doing the busywork.
+
+![The Folio dashboard](docs/screenshots/dashboard.png)
+
+- **Tell Filio, or hand it a statement.** Type "Lunch at Blue Fern Café, 18.40
+  on the Visa", or drop in a bank export (CSV, Excel, PDF or a photo of a
+  receipt), and Filio drafts the entries.
+- **Nothing is written until you approve it.** Every change arrives as a
+  change set you can read line by line. It must pass `bean-check` before it is
+  applied, and it is saved as a git commit, so it can always be undone.
+- **Books kept like a careful bookkeeper would.** Entries go in date order
+  into the right month file, in your ledger's own style.
+- **Your data stays yours.** The ledger is ordinary text files in a folder you
+  choose, synced through your own git remote, optionally encrypted with
+  git-crypt. Names, account numbers and addresses are hidden before anything
+  is sent to a model, and put back when the answer arrives.
+- **Your choice of model.** Anthropic, OpenAI, Azure OpenAI, or any
+  OpenAI-compatible server, including a model running on your own Mac.
+- **Also:** dashboards, transactions by month, account balances, saved
+  queries, voice input, a PIN lock, and [Fava](https://beancount.github.io/fava/)
+  built in.
+
+| Chat with Filio | Review every change |
+|---|---|
+| ![Filio drafting an entry next to the Accounts view](docs/screenshots/chat.png) | ![A change set in Review, showing the diff](docs/screenshots/review.png) |
+| **Transactions by month** | **Light and dark** |
+| ![Transactions for November](docs/screenshots/transactions.png) | ![The dashboard in dark mode](docs/screenshots/dashboard-dark.png) |
+
+All data in these screenshots is made up.
+
+## Download
+
+Folio runs on Macs with Apple silicon, macOS 13 or later. Download the latest
+disk image from
+[Releases](https://github.com/0xnoahzhu/folio-releases/releases), open it, and
+drag Folio to Applications.
+
+If macOS says it cannot check Folio for malicious software the first time you
+open it, go to System Settings → Privacy & Security and click **Open Anyway**.
+
+## Uninstall Folio completely
+
+Removing Folio does not touch your ledgers. Your ledger folders, their git
+history and any git remotes, for example a repository on GitHub, stay
+exactly as they are.
+
+### 1. Before you quit
+
+- If **Open Folio in the background at login** is on (Settings → Notifications),
+  turn it off.
+- If your ledger uses encryption (git-crypt), make sure you still have the
+  exported key file. Without it an encrypted remote cannot be read.
+
+Then quit Folio (⌘Q).
+
+### 2. Remove the app
+
+Drag **Folio** from Applications to the Trash.
+
+### 3. Remove what Folio keeps on your Mac
+
+| Location | What it holds |
+|---|---|
+| `~/Library/Application Support/Folio` | Folio's database `folio.db`: settings, model profiles, **API keys and sync tokens**, chats, masking maps, recent ledgers; call logs; the browser engine's caches |
+| `~/Library/Logs/Folio` | App logs |
+| `~/Library/Preferences/app.folio.desktop.plist` | macOS preferences (window size, last folders in Open and Save panels) |
+| `~/Library/Caches/folio-ocr` | Text recognition cache, created by macOS when Folio reads an image or scanned PDF |
+| `~/Library/Caches/folio-*` | Other caches macOS may create for Folio's helpers (speech, name detection) |
+| `~/Library/Saved Application State/app.folio.desktop.savedState` | Window restoration, if macOS created it |
+
+The first row holds your API keys and tokens, so remove it even if you plan
+to reinstall later on a different Mac.
+
+**In Terminal** (deletes permanently; paste as one block):
+
+```sh
+rm -rf ~/Library/"Application Support"/Folio
+rm -rf ~/Library/Logs/Folio
+rm -rf ~/Library/Caches/folio-*
+rm -rf ~/Library/"Saved Application State"/app.folio.desktop.savedState
+defaults delete app.folio.desktop 2>/dev/null
+rm -f ~/Library/Preferences/app.folio.desktop.plist
+```
+
+**Or in Finder:** choose Go → Go to Folder… (⇧⌘G), paste each path from the
+table, and move what you find to the Trash. Then empty the Trash.
+
+### 4. Reset permissions (optional)
+
+macOS keeps the permissions you gave Folio (microphone and
+notifications). To clear them:
+
+```sh
+tccutil reset All app.folio.desktop
+```
+
+If Folio still appears in System Settings → General → Login Items, remove it
+there.
+
+### 5. Inside your ledgers (optional)
+
+Each ledger folder Folio opened has a `.folio` folder with that ledger's
+rules, learned habits and import profiles. It is part of your ledger, so it
+is kept. If you will not use Folio again and want no trace of it, delete
+`.folio` in each ledger folder and commit the change.
+
+### Nothing else
+
+- Folio never uses the macOS Keychain, so there is nothing to remove there.
+- The bundled tools (Python, Beancount, Fava, git, git-crypt) live inside
+  Folio.app and are gone with it.
+- On-device speech models used by voice input belong to macOS, which
+  manages them for all apps.
+
+## License
+
+Folio is free to download and use. Its source code is not public, except
+Folio's ledger engine, which is GPL-2.0 (see below).
+
+© 2026 Noah Zhu. All rights reserved.
+
+### Folio and the GPL
+
+Folio is built on [Beancount](https://github.com/beancount/beancount), which is
+licensed under the GNU GPL version 2. Folio follows it like this:
+
+- **Folio's ledger engine is GPL-2.0.** The engine is the small Python program
+  inside Folio.app that loads, checks and queries your ledger. It uses
+  Beancount directly (in the same process), so it counts as a work based on
+  Beancount and is under the same license. Its source code ships inside
+  Folio.app as readable Python files, in `Folio.app/Contents/Resources/engine/`.
+- **The rest of Folio is a separate program.** The app you see (its window,
+  Filio, privacy masking, sync) runs in its own process. It starts the engine,
+  git and the other tools as separate programs and talks to them through
+  pipes, the way any app runs a command-line tool. It contains no GPL code, so
+  the GPL does not extend to it.
+- **The bundled tools are included unchanged**, with their license texts.
+
+You can get the complete source code of every GPL program in any Folio release,
+including the engine, by opening an issue in this repository. This offer is
+valid for at least three years after each release.
+
+### Open-source software inside Folio
+
+| Component | License | How Folio uses it | Source |
+|---|---|---|---|
+| Folio's ledger engine | GPL-2.0 | Separate program | Inside Folio.app |
+| [Beancount](https://github.com/beancount/beancount), [beanquery](https://github.com/beancount/beanquery) | GPL-2.0 | Used by the engine | [PyPI](https://pypi.org/project/beancount/#files) |
+| [beanprice](https://github.com/beancount/beanprice) | GPL-2.0 | Used by the engine | [PyPI](https://pypi.org/project/beanprice/#files) |
+| [Fava](https://github.com/beancount/fava) | MIT | Separate program | [PyPI](https://pypi.org/project/fava/#files) |
+| [Git](https://git-scm.com/) | GPL-2.0 | Separate program | [kernel.org](https://www.kernel.org/pub/software/scm/git/) |
+| [git-crypt](https://www.agwa.name/projects/git-crypt/) | GPL-3.0 or later | Separate program | [agwa.name](https://www.agwa.name/projects/git-crypt/downloads/) |
+| [Python](https://www.python.org/) | PSF-2.0 | Runs the engine | [python.org](https://www.python.org/downloads/source/) |
+| [OpenSSL](https://www.openssl.org/) | Apache-2.0 | Inside git-crypt | [GitHub](https://github.com/openssl/openssl/releases) |
+| [Electron](https://www.electronjs.org/) (with Chromium and Node.js), [React](https://react.dev/), i18next, Zustand, Zod | MIT (Chromium: BSD and others) | Part of the app | Their project pages |
+| [Figtree](https://github.com/erikdkennedy/figtree) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) fonts | OFL-1.1 | Part of the app | Their project pages |
+
+Each release bundles the latest stable version of these tools. In the app,
+**Settings → About → Open source licenses** lists the exact versions, their
+full license texts and a link to the source code of each one.
