@@ -53,7 +53,8 @@ exactly as they are.
 - If **Open Folio in the background at login** is on (Settings → Notifications),
   turn it off.
 - If your ledger uses encryption (git-crypt), make sure you still have the
-  exported key file. Without it an encrypted remote cannot be read.
+  exported key file (Folio suggests `~/Documents/folio-git-crypt.key`).
+  Without it an encrypted remote cannot be read.
 
 Then quit Folio (⌘Q).
 
@@ -65,22 +66,21 @@ Drag **Folio** from Applications to the Trash.
 
 | Location | What it holds |
 |---|---|
-| `~/Library/Application Support/Folio` | Folio's database `folio.db`: settings, model profiles, **API keys and sync tokens**, chats, masking maps, recent ledgers; call logs; the browser engine's caches |
+| `~/Library/Application Support/Folio` | Folio's database `folio.db`: settings, model profiles, **API keys and sync tokens**, chats, documents in the Inbox (imported statements and receipts), masking maps, recent ledgers; call logs; the browser engine's caches |
 | `~/Library/Logs/Folio` | App logs |
-| `~/Library/Preferences/app.folio.desktop.plist` | macOS preferences (window size, last folders in Open and Save panels) |
+| `~/Library/Preferences/app.folio.desktop.plist` | macOS preferences (Open and Save panel size and last folder) |
 | `~/Library/Caches/folio-ocr` | Text recognition cache, created by macOS when Folio reads an image or scanned PDF |
-| `~/Library/Caches/folio-*` | Other caches macOS may create for Folio's helpers (speech, name detection) |
 | `~/Library/Saved Application State/app.folio.desktop.savedState` | Window restoration, if macOS created it |
 
-The first row holds your API keys and tokens, so remove it even if you plan
-to reinstall later on a different Mac.
+The first row holds your API keys and tokens. Remove it unless you will
+reinstall Folio on this Mac and want to keep your settings.
 
 **In Terminal** (deletes permanently; paste as one block):
 
 ```sh
 rm -rf ~/Library/"Application Support"/Folio
 rm -rf ~/Library/Logs/Folio
-rm -rf ~/Library/Caches/folio-*
+rm -rf ~/Library/Caches/folio-ocr
 rm -rf ~/Library/"Saved Application State"/app.folio.desktop.savedState
 defaults delete app.folio.desktop 2>/dev/null
 rm -f ~/Library/Preferences/app.folio.desktop.plist
@@ -91,28 +91,31 @@ table, and move what you find to the Trash. Then empty the Trash.
 
 ### 4. Reset permissions (optional)
 
-macOS keeps the permissions you gave Folio (microphone and
-notifications). To clear them:
+macOS keeps the permissions you gave Folio: the microphone, and access to
+folders such as Documents or Desktop if your ledgers are there. To clear them:
 
 ```sh
 tccutil reset All app.folio.desktop
 ```
 
-If Folio still appears in System Settings → General → Login Items, remove it
-there.
+Notification settings are separate; macOS removes them on its own.
+
+If Folio still appears in System Settings → General → Login Items (Login Items
+& Extensions on macOS 15 and later), remove it there.
 
 ### 5. Inside your ledgers (optional)
 
-Each ledger folder Folio opened has a `.folio` folder with that ledger's
-rules, learned habits and import profiles. It is part of your ledger, so it
-is kept. If you will not use Folio again and want no trace of it, delete
-`.folio` in each ledger folder and commit the change.
+A ledger where you saved rules for Filio has a `.folio` folder holding them
+(`rules.md`). It is part of your ledger, so it is kept. If you will not use
+Folio again and want no trace of it, delete `.folio` in that ledger folder and
+commit the change.
 
 ### Nothing else
 
 - Folio never uses the macOS Keychain, so there is nothing to remove there.
-- The bundled tools (Python, Beancount, Fava, git, git-crypt) live inside
-  Folio.app and are gone with it.
+- The bundled tools (Python, Beancount, beanquery, beanprice, Fava, git,
+  git-crypt) and Folio's helpers live inside Folio.app and are gone with it.
+  Folio never writes to your `~/.gitconfig`.
 - On-device speech models used by voice input belong to macOS, which
   manages them for all apps.
 
