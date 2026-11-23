@@ -19,9 +19,6 @@ Then quit Folio (⌘Q).
 If Folio ever quit unexpectedly, a Fava server it started may still be
 running. Restarting the Mac stops it, or in Terminal:
 
-```sh
-pkill -f "/Folio.app/Contents/Resources/"
-```
 
 ## 2. Remove the app
 
@@ -53,18 +50,14 @@ reinstall Folio on this Mac and want to keep your settings.
 there is skipped):
 
 ```sh
-[ -f ~/Library/"Application Support"/Folio/folio.db ] && sqlite3 ~/Library/"Application Support"/Folio/folio.db "SELECT path FROM ledgers;" | while IFS= read -r L; do [ -n "$L" ] && [ -d "$L/.folio" ] && rm -rf "$L/.folio" && echo "Removed $L/.folio"; done
-rm -rf ~/Library/"Application Support"/Folio ~/Library/Logs/Folio
-rm -rf ~/Library/Caches/folio-ocr ~/Library/Caches/folio-updater
-rm -rf ~/Library/Caches/app.folio.desktop ~/Library/Caches/app.folio.desktop.ShipIt
-rm -rf ~/Library/Caches/app.folio.desktop.names ~/Library/Caches/app.folio.desktop.speech ~/Library/Caches/app.folio.desktop.auth
-rm -rf ~/Library/HTTPStorages/app.folio.desktop
-rm -rf ~/Library/"Saved Application State"/app.folio.desktop.savedState
-C="$(getconf DARWIN_USER_CACHE_DIR)" && [ -n "$C" ] && rm -rf "${C}app.folio.desktop" "${C}app.folio.desktop.helper" "${C}app.folio.desktop.helper.GPU" "${C}app.folio.desktop.helper.Renderer" "${C}app.folio.desktop.helper.Plugin"
-[ -n "$TMPDIR" ] && find "$TMPDIR" -maxdepth 1 -name 'folio-askpass-*' -exec rm -rf {} +
-find ~/Library/Logs/DiagnosticReports -maxdepth 1 \( -name 'Folio-20*' -o -name 'Folio Helper*-20*' -o -name 'folio-ocr-20*' -o -name 'folio-names-20*' -o -name 'folio-speech-20*' -o -name 'folio-auth-20*' \) -delete
-defaults delete app.folio.desktop 2>/dev/null
-rm -f ~/Library/Preferences/app.folio.desktop.plist
+pkill -f "/Folio.app/Contents/Resources/"
+D=~/Library/"Application Support"/Folio; C="$(getconf DARWIN_USER_CACHE_DIR)"
+[ -f "$D/folio.db" ] && sqlite3 "$D/folio.db" "SELECT path FROM ledgers" | while IFS= read -r L; do [ -n "$L" ] && rm -rf "$L/.folio"; done
+rm -rf "$D" ~/Library/Logs/Folio ~/Library/Caches/{folio-ocr,folio-updater} ~/Library/Caches/app.folio.desktop{,.ShipIt,.names,.speech,.auth} ~/Library/HTTPStorages/app.folio.desktop ~/Library/"Saved Application State"/app.folio.desktop.savedState
+[ -n "$C" ] && rm -rf "$C"app.folio.desktop{,.helper,.helper.GPU,.helper.Renderer,.helper.Plugin}
+find "$TMPDIR" -maxdepth 1 -name 'folio-askpass-*' -exec rm -rf {} + 2>/dev/null
+find ~/Library/Logs/DiagnosticReports -maxdepth 1 \( -name 'Folio-20*' -o -name 'Folio Helper*' -o -name 'folio-*-20*' \) -delete 2>/dev/null
+defaults delete app.folio.desktop 2>/dev/null; rm -f ~/Library/Preferences/app.folio.desktop.plist; tccutil reset All app.folio.desktop
 ```
 
 **Or in Finder:** choose Go → Go to Folder… (⇧⌘G), paste each `~/Library`
@@ -91,10 +84,10 @@ tccutil reset All app.folio.desktop
 
 ## 5. Inside your ledgers
 
-- **`.folio`** (Filio's rules, `rules.md`, and `config.json` if you made one):
-  the first line of the Terminal commands above removes it from every ledger
-  Folio opened, and prints each folder it removed. In a ledger kept in git,
-  commit that change. A ledger Folio never opened is not touched.
+- **`.folio`**: a folder in the top of each ledger that holds Filio's rules for
+  that ledger (`rules.md`, and `config.json` if you made one). The commands
+  above remove it from every ledger Folio opened; in a ledger kept in git,
+  commit that.
 
 These are part of your ledger and are kept:
 
