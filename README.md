@@ -14,6 +14,19 @@ friendly AI bookkeeper, doing the busywork.
   applied, and it is saved as a git commit, so it can always be undone.
 - **Books kept like a careful bookkeeper would.** Entries go in date order
   into the right month file, in your ledger's own style.
+- **It learns how you book things.** Folio fills in the categories it is sure
+  of from your whole history and the choices you make in Review, so Filio
+  only asks about new merchants. One answer such as "all MeiTuan orders are
+  delivery" fixes every entry it applies to, and a choice you make in Review
+  can be saved as a rule.
+- **Filio remembers what you tell it.** Accounts you mention, people,
+  preferences: kept for each ledger, and listed in Settings, where you can
+  edit or forget them. Mention a card you have not added yet, and when its
+  statement arrives Filio asks whether to open it. It never opens one on its
+  own.
+- **Drop in a whole month at once.** Add many statements and receipts
+  together; Folio reads them in the background, one by one, and asks for the
+  password of a locked PDF.
 - **Your data stays yours.** The ledger is ordinary text files in a folder you
   choose, synced through your own git remote, optionally encrypted with
   git-crypt. Names, account numbers and addresses are hidden before anything
@@ -21,8 +34,8 @@ friendly AI bookkeeper, doing the busywork.
 - **Your choice of model.** Anthropic, OpenAI, Azure OpenAI, or any
   OpenAI-compatible server, including a model running on your own Mac.
 - **Also:** dashboards, transactions by month, account balances, saved
-  queries, voice input, a PIN lock, and [Fava](https://beancount.github.io/fava/)
-  built in.
+  queries, voice input, a PIN lock, [Fava](https://beancount.github.io/fava/)
+  built in, and updates that install themselves.
 
 | Chat with Filio | Review every change |
 |---|---|
@@ -37,10 +50,21 @@ All data in these screenshots is made up.
 Folio runs on Macs with Apple silicon, macOS 13 or later. Download the latest
 disk image from
 [Releases](https://github.com/0xnoahzhu/folio-releases/releases), open it, and
-drag Folio to Applications.
+drag Folio to Applications. Folio is signed with a Developer ID and notarized
+by Apple, so it opens without a warning.
 
-If macOS says it cannot check Folio for malicious software the first time you
-open it, go to System Settings → Privacy & Security and click **Open Anyway**.
+### Updates
+
+Folio checks this repository for a new version, downloads it in the
+background, and shows **New version** in its top bar when it is ready. Click
+it to open Settings → Updates, then **Restart to update**; an update you leave
+there installs the next time you quit Folio. The check only asks GitHub for
+Folio's newest release: it sends no ledger data and no ID for your Mac. You can
+turn automatic checks off in Settings → Updates.
+
+Versions before 0.13.1 do not update themselves: download the new version once
+and replace the old app in Applications. Your settings, chats and ledgers stay
+as they are.
 
 ## Move Folio to another Mac
 
@@ -169,10 +193,12 @@ Drag **Folio** from Applications to the Trash.
 
 | Location | What it holds |
 |---|---|
-| `~/Library/Application Support/Folio` | Folio's database `folio.db`: settings, model profiles, **API keys and sync tokens**, chats, documents in the Inbox (imported statements and receipts), masking maps, recent ledgers; call logs; the browser engine's caches |
+| `~/Library/Application Support/Folio` | Folio's database `folio.db` (and the backups made before each update, `folio.db.backup-<version>`): settings, model profiles, **API keys and sync tokens**, chats, documents in the Inbox (imported statements and receipts), masking maps, recent ledgers; call logs; the browser engine's caches |
 | `~/Library/Logs/Folio` | App logs |
 | `~/Library/Preferences/app.folio.desktop.plist` | macOS preferences (Open and Save panel size and last folder) |
 | `~/Library/Caches/folio-ocr` | Text recognition cache, created by macOS when Folio reads an image or scanned PDF |
+| `~/Library/Caches/folio-updater` | Updates Folio downloaded and has not installed yet |
+| `~/Library/Caches/app.folio.desktop.ShipIt` | Left by macOS's installer after an update |
 | `~/Library/Saved Application State/app.folio.desktop.savedState` | Window restoration, if macOS created it |
 
 The first row holds your API keys and tokens. Remove it unless you will
@@ -184,6 +210,7 @@ reinstall Folio on this Mac and want to keep your settings.
 rm -rf ~/Library/"Application Support"/Folio
 rm -rf ~/Library/Logs/Folio
 rm -rf ~/Library/Caches/folio-ocr
+rm -rf ~/Library/Caches/folio-updater ~/Library/Caches/app.folio.desktop.ShipIt
 rm -rf ~/Library/"Saved Application State"/app.folio.desktop.savedState
 defaults delete app.folio.desktop 2>/dev/null
 rm -f ~/Library/Preferences/app.folio.desktop.plist
