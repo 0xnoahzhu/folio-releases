@@ -198,7 +198,9 @@ Drag **Folio** from Applications to the Trash.
 | `~/Library/Preferences/app.folio.desktop.plist` | macOS preferences (Open and Save panel size and last folder) |
 | `~/Library/Caches/folio-ocr` | Text recognition cache, created by macOS when Folio reads an image or scanned PDF |
 | `~/Library/Caches/folio-updater` | Updates Folio downloaded and has not installed yet |
-| `~/Library/Caches/app.folio.desktop.ShipIt` | Left by macOS's installer after an update |
+| `~/Library/Caches/app.folio.desktop.ShipIt` | Left by the update installer, after an update |
+| `~/Library/Caches/app.folio.desktop` | Download cache macOS keeps for Folio, if it made one |
+| `~/Library/HTTPStorages/app.folio.desktop` | Network storage macOS keeps for Folio, if it made one |
 | `~/Library/Saved Application State/app.folio.desktop.savedState` | Window restoration, if macOS created it |
 
 The first row holds your API keys and tokens. Remove it unless you will
@@ -211,6 +213,7 @@ rm -rf ~/Library/"Application Support"/Folio
 rm -rf ~/Library/Logs/Folio
 rm -rf ~/Library/Caches/folio-ocr
 rm -rf ~/Library/Caches/folio-updater ~/Library/Caches/app.folio.desktop.ShipIt
+rm -rf ~/Library/Caches/app.folio.desktop ~/Library/HTTPStorages/app.folio.desktop
 rm -rf ~/Library/"Saved Application State"/app.folio.desktop.savedState
 defaults delete app.folio.desktop 2>/dev/null
 rm -f ~/Library/Preferences/app.folio.desktop.plist
