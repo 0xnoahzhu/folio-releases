@@ -53,6 +53,7 @@ reinstall Folio on this Mac and want to keep your settings.
 there is skipped):
 
 ```sh
+[ -f ~/Library/"Application Support"/Folio/folio.db ] && sqlite3 ~/Library/"Application Support"/Folio/folio.db "SELECT path FROM ledgers;" | while IFS= read -r L; do [ -n "$L" ] && [ -d "$L/.folio" ] && rm -rf "$L/.folio" && echo "Removed $L/.folio"; done
 rm -rf ~/Library/"Application Support"/Folio ~/Library/Logs/Folio
 rm -rf ~/Library/Caches/folio-ocr ~/Library/Caches/folio-updater
 rm -rf ~/Library/Caches/app.folio.desktop ~/Library/Caches/app.folio.desktop.ShipIt
@@ -88,13 +89,15 @@ tccutil reset All app.folio.desktop
   System Settings → Privacy & Security → Local Network, turn it off there.
 - Notification settings hold no data; macOS manages them.
 
-## 5. Inside your ledgers (optional)
+## 5. Inside your ledgers
 
-These are part of your ledger and its git history, so they are kept:
+- **`.folio`** (Filio's rules, `rules.md`, and `config.json` if you made one):
+  the first line of the Terminal commands above removes it from every ledger
+  Folio opened, and prints each folder it removed. In a ledger kept in git,
+  commit that change. A ledger Folio never opened is not touched.
 
-- **`.folio`**, in a ledger where you saved rules for Filio: `rules.md`, and
-  `config.json` if you made one. If you will not use Folio again and want no
-  trace of it, delete `.folio` and commit the change.
+These are part of your ledger and are kept:
+
 - **Saved documents**: statements and receipts you saved into the ledger, in
   its `documents` folder (or the folder named by `option "documents"`). Keep
   them: your entries link to them.

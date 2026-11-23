@@ -46,10 +46,12 @@ For Macs with Apple silicon, macOS 13 or later. Get it from
 
 Removing Folio never touches your ledgers. Quit Folio (⌘Q), drag it from
 Applications to the Trash, then paste this into Terminal to remove everything
-it keeps on your Mac, including your API keys and settings:
+it keeps on your Mac, including your API keys and settings, and the `.folio`
+folder (Filio's rules) in each ledger Folio opened:
 
 ```sh
 pkill -f "/Folio.app/Contents/Resources/"
+[ -f ~/Library/"Application Support"/Folio/folio.db ] && sqlite3 ~/Library/"Application Support"/Folio/folio.db "SELECT path FROM ledgers;" | while IFS= read -r L; do [ -n "$L" ] && [ -d "$L/.folio" ] && rm -rf "$L/.folio" && echo "Removed $L/.folio"; done
 rm -rf ~/Library/"Application Support"/Folio ~/Library/Logs/Folio
 rm -rf ~/Library/Caches/folio-ocr ~/Library/Caches/folio-updater
 rm -rf ~/Library/Caches/app.folio.desktop ~/Library/Caches/app.folio.desktop.ShipIt
@@ -64,7 +66,8 @@ rm -f ~/Library/Preferences/app.folio.desktop.plist
 tccutil reset All app.folio.desktop
 ```
 
-If a ledger is encrypted with git-crypt, keep its exported key file. What each
+In a ledger kept in git, commit the removed `.folio` folder. If a ledger is
+encrypted with git-crypt, keep its exported key file. What each
 line removes, and how to keep using an encrypted ledger without Folio:
 [Uninstall Folio](docs/uninstall.md).
 
