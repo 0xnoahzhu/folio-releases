@@ -39,10 +39,8 @@ All data in these screenshots is made up.
 
 ## Download
 
-For Macs with Apple silicon, macOS 13 or later. Download the latest disk image
-from [Releases](https://github.com/0xnoahzhu/folio-releases/releases) and drag
-Folio to Applications. Folio is signed and notarized by Apple, and updates
-itself: when a new version is ready, **New version** appears in its top bar.
+For Macs with Apple silicon, macOS 13 or later. Get it from
+[Releases](https://github.com/0xnoahzhu/folio-releases/releases).
 
 ## More
 
