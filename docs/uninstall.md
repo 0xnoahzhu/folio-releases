@@ -33,7 +33,7 @@ live inside Folio.app and go with it.
 
 | Location | What it holds | When it is there |
 |---|---|---|
-| `~/Library/Application Support/Folio` | Folio's database `folio.db`, and the copies made before an update (`folio.db.backup-…`, the newest two): settings, model profiles, **API keys, sync tokens and remembered PDF passwords**, the lock PIN (as a hash), chats, Inbox documents (imported statements and receipts), masking maps, recent ledgers. Also the model call log (`logs/calls`), the sync password helper (`askpass`), and the browser engine's storage and caches | Always |
+| `~/Library/Application Support/Folio` | Folio's database `folio.db`, and the copies made before an update (`folio.db.backup-…`, the newest two): settings, model profiles, **API keys, sync tokens and remembered PDF passwords**, the lock PIN (as a hash), chats, Inbox documents (imported statements and receipts), masking maps, recent ledgers. Also the model call log (`logs/calls`), the sync password helper (`askpass`), the record of a running Fava server (`fava-process.json`), and the browser engine's storage and caches | Always |
 | `~/Library/Logs/Folio` | App logs, one file per day | Always |
 | `~/Library/Preferences/app.folio.desktop.plist` | macOS preferences (Open and Save panel size and last folder) | Always |
 | `~/Library/Caches/folio-ocr` | Text recognition cache macOS makes for Folio's reader | After Folio reads an image or a scanned PDF |
