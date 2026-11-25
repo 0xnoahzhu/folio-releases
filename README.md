@@ -23,9 +23,9 @@ chat box, does the bookkeeping.
 
 | Chat | Review |
 |---|---|
-| ![Filio drafting an entry](docs/screenshots/chat.png) | ![A change in Review](docs/screenshots/review.png) |
-| **Transactions** | **Dark mode** |
-| ![Transactions for a month](docs/screenshots/transactions.png) | ![The dashboard in dark mode](docs/screenshots/dashboard-dark.png) |
+| ![Filio drafting a lunch entry next to the Accounts view](docs/screenshots/chat.png) | ![The change waiting in Review, with its commit message](docs/screenshots/review.png) |
+| **Drafts in place** | **Dark mode** |
+| ![The drafted entry shown among the month's transactions](docs/screenshots/transactions.png) | ![The dashboard in dark mode](docs/screenshots/dashboard-dark.png) |
 
 Screenshots use made-up data.
 
