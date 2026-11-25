@@ -1,8 +1,10 @@
-# Folio
+# Folio is the app. Filio is its agent.
 
-A Mac app for keeping your personal accounts in plain-text
-[Beancount](https://beancount.github.io/) files, with Filio, an AI bookkeeper,
-doing the busywork.
+**Folio** is the app. **Filio** is its AI bookkeeper and mascot, the little
+bean on the chat box: you talk to Filio, and Filio keeps your books in Folio.
+
+Folio is a Mac app for keeping your personal accounts in plain-text
+[Beancount](https://beancount.github.io/) files, with Filio doing the busywork.
 
 ![The Folio dashboard](docs/screenshots/dashboard.png)
 
@@ -18,7 +20,7 @@ doing the busywork.
   delivery", updates every matching entry.
 - **Remembers what you tell it.** Accounts, people and preferences, per ledger,
   editable in Settings.
-- **A whole month at once.** Add many statements together; Folio reads them in
+- **A whole month at once.** Add many statements together; Filio reads them in
   the background.
 - **Private by design.** Your ledger stays in your folder and your git remote,
   optionally encrypted. Names and numbers are hidden before anything reaches a
@@ -42,30 +44,10 @@ All data in these screenshots is made up.
 For Macs with Apple silicon, macOS 13 or later. Get it from
 [Releases](https://github.com/0xnoahzhu/folio-releases/releases).
 
-## Uninstall
-
-Quit Folio (⌘Q), drag it to the Trash, and paste this into Terminal. It removes
-everything Folio keeps on your Mac, including your API keys, and the `.folio`
-folder in each ledger. Your ledgers themselves are not touched.
-
-```sh
-pkill -f "/Folio.app/Contents/Resources/"
-D=~/Library/"Application Support"/Folio; C="$(getconf DARWIN_USER_CACHE_DIR)"
-[ -f "$D/folio.db" ] && sqlite3 "$D/folio.db" "SELECT path FROM ledgers" | while IFS= read -r L; do [ -n "$L" ] && rm -rf "$L/.folio"; done
-rm -rf "$D" ~/Library/Logs/Folio ~/Library/Caches/{folio-ocr,folio-updater} ~/Library/Caches/app.folio.desktop{,.ShipIt,.names,.speech,.auth} ~/Library/HTTPStorages/app.folio.desktop ~/Library/"Saved Application State"/app.folio.desktop.savedState
-[ -n "$C" ] && rm -rf "$C"app.folio.desktop{,.helper,.helper.GPU,.helper.Renderer,.helper.Plugin}
-find "$TMPDIR" -maxdepth 1 -name 'folio-askpass-*' -exec rm -rf {} + 2>/dev/null
-find ~/Library/Logs/DiagnosticReports -maxdepth 1 \( -name 'Folio-20*' -o -name 'Folio Helper*' -o -name 'folio-*-20*' \) -delete 2>/dev/null
-defaults delete app.folio.desktop 2>/dev/null; rm -f ~/Library/Preferences/app.folio.desktop.plist; tccutil reset All app.folio.desktop
-```
-
-`.folio` sits in the top folder of each ledger and holds Filio's rules for that
-ledger (`rules.md`). In a ledger kept in git, commit its removal. Details:
-[Uninstall Folio](docs/uninstall.md).
-
 ## More
 
 - [Move Folio to another Mac](docs/move-to-another-mac.md)
+- [Uninstall Folio](docs/uninstall.md)
 - [License and open-source software](docs/license.md)
 
 © 2026 Noah Zhu. Free to download and use.
