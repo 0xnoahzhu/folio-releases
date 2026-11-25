@@ -1,131 +1,127 @@
 # Uninstall Folio
 
-Removing Folio does not touch your ledgers. Your ledger folders, their git
-history and any git remotes, for example a repository on GitHub, stay
-exactly as they are.
+Removing Folio does not touch your ledgers: the folders, their git history and
+any remote (for example on GitHub) stay exactly as they are.
 
-## 1. Before you quit
+## 1. Before you remove the app
 
-- If **Open Folio in the background at login** is on (Settings → Notifications),
-  turn it off.
-- If a ledger uses encryption (git-crypt), make sure you still have its
-  exported key file (by default Folio saves it as `~/Documents/folio-git-crypt.key`). It is
-  your file: Folio never deletes it, and this page does not either. Without it
-  an encrypted remote cannot be read. See also
-  [encrypted ledgers](#encrypted-ledgers) below.
+- Turn off **Open Folio in the background at login** (Settings →
+  Notifications) if it is on.
+- If a ledger is encrypted (git-crypt), make sure you still have its key file,
+  by default `~/Documents/folio-git-crypt.key` (or `~/Documents/folio-ledger.key`).
+  It is yours: Folio never deletes it, and neither does this page. Without it an
+  encrypted remote cannot be read.
+- Clear Folio's notifications in Notification Center: with **Show amounts and
+  payees** on, they can show amounts and accounts, and macOS keeps them.
+- Quit Folio (⌘Q).
 
-Then quit Folio (⌘Q).
-
-If Folio ever quit unexpectedly, a Fava server it started may still be
-running. Restarting the Mac stops it, or in Terminal:
-
-
-## 2. Remove the app
-
-Drag **Folio** from Applications to the Trash. The bundled tools (Python,
-Beancount, beanquery, beanprice, Fava, git, git-crypt) and Folio's helpers
-live inside Folio.app and go with it.
-
-## 3. Remove what Folio keeps on your Mac
-
-| Location | What it holds | When it is there |
-|---|---|---|
-| `~/Library/Application Support/Folio` | Folio's database `folio.db`, and the copies made before an update (`folio.db.backup-…`, the newest two): settings, model profiles, **API keys, sync tokens and remembered PDF passwords**, the lock PIN (as a hash), chats, Inbox documents (imported statements and receipts), masking maps, recent ledgers. Also the model call log (`logs/calls`), the sync password helper (`askpass`), the record of a running Fava server (`fava-process.json`), and the browser engine's storage and caches | Always |
-| `~/Library/Logs/Folio` | App logs, one file per day | Always |
-| `~/Library/Preferences/app.folio.desktop.plist` | macOS preferences (Open and Save panel size and last folder) | Always |
-| `~/Library/Caches/folio-ocr` | Text recognition cache macOS makes for Folio's reader | After Folio reads an image or a scanned PDF |
-| `~/Library/Caches/folio-updater` | An update Folio downloaded and has not installed yet | While an update waits |
-| `~/Library/Caches/app.folio.desktop.ShipIt` | The update installer's state and logs | After an update |
-| `~/Library/Caches/app.folio.desktop`, `~/Library/HTTPStorages/app.folio.desktop` | Download cache and network storage macOS keeps for the update installer | After an update, if macOS made them |
-| `~/Library/Caches/app.folio.desktop.names`, `.speech`, `.auth` | Caches macOS may make for Folio's name finder, voice input and "Forgot PIN?" helpers | Only if macOS made one |
-| `~/Library/Saved Application State/app.folio.desktop.savedState` | Window restoration | Only if macOS made it |
-| `app.folio.desktop` and `app.folio.desktop.helper…` in macOS's hidden per-user cache folder (`getconf DARWIN_USER_CACHE_DIR`) | Compiled graphics shaders, a few MB | Always |
-| `folio-askpass-…` in your temporary folder (`$TMPDIR`) | The sync password helper's socket, used instead of the `askpass` folder above when your user folder's path is very long | While Folio runs; left only if Folio quit unexpectedly |
-| `~/Library/Logs/DiagnosticReports` (`Folio-…`, `Folio Helper…`, `folio-ocr-…` and the other helpers) | Crash reports | Only if something crashed |
-
-The first row holds your API keys and tokens. Remove it unless you will
-reinstall Folio on this Mac and want to keep your settings.
-
-**In Terminal** (deletes permanently; paste as one block; a path that is not
-there is skipped):
-
-```sh
-pkill -f "/Folio.app/Contents/Resources/"
-D=~/Library/"Application Support"/Folio; C="$(getconf DARWIN_USER_CACHE_DIR)"
-[ -f "$D/folio.db" ] && sqlite3 "$D/folio.db" "SELECT path FROM ledgers" | while IFS= read -r L; do [ -n "$L" ] && rm -rf "$L/.folio"; done
-rm -rf "$D" ~/Library/Logs/Folio ~/Library/Caches/{folio-ocr,folio-updater} ~/Library/Caches/app.folio.desktop{,.ShipIt,.names,.speech,.auth} ~/Library/HTTPStorages/app.folio.desktop ~/Library/"Saved Application State"/app.folio.desktop.savedState
-[ -n "$C" ] && rm -rf "$C"app.folio.desktop{,.helper,.helper.GPU,.helper.Renderer,.helper.Plugin}
-find "$TMPDIR" -maxdepth 1 -name 'folio-askpass-*' -exec rm -rf {} + 2>/dev/null
-find ~/Library/Logs/DiagnosticReports -maxdepth 1 \( -name 'Folio-20*' -o -name 'Folio Helper*' -o -name 'folio-*-20*' \) -delete 2>/dev/null
-defaults delete app.folio.desktop 2>/dev/null; rm -f ~/Library/Preferences/app.folio.desktop.plist; tccutil reset All app.folio.desktop
-```
-
-**Or in Finder:** choose Go → Go to Folder… (⇧⌘G), paste each `~/Library`
-path from the table, and move what you find to the Trash; in
-`~/Library/Logs/DiagnosticReports`, only the files whose names start with
-`Folio` or `folio-`. Then empty the Trash. The graphics caches and the
-temporary folder are hidden from Finder; leave them, or use the Terminal block.
-
-## 4. Permissions and login items (optional)
-
-macOS keeps the permissions you gave Folio: the microphone, and access to
-folders such as Documents, Desktop, Downloads, iCloud Drive or a network or
-external drive if your ledgers are there. To clear them:
+Then, while Folio.app is still in Applications, clear the permissions you gave
+it (microphone, folders) and stop anything it left running:
 
 ```sh
 tccutil reset All app.folio.desktop
+pkill -f "/Folio.app/Contents/Resources/"
 ```
 
-- If Folio still appears in System Settings → General → Login Items (Login
-  Items & Extensions on macOS 15 and later), remove it there.
-- If you used a model server on another device and Folio is listed in
-  System Settings → Privacy & Security → Local Network, turn it off there.
-- Notification settings hold no data; macOS manages them.
+## 2. Remove the app
+
+Drag **Folio** from Applications to the Trash, and out of the Dock if you kept
+it there. The bundled tools (Python, Beancount, Fava, git, git-crypt) and
+Folio's helpers are inside the app and go with it.
+
+## 3. Remove what Folio keeps on your Mac
+
+| Location | What it holds | When |
+|---|---|---|
+| `~/Library/Application Support/Folio` | **Settings, API keys, sync tokens, saved PDF passwords**, the PIN (hashed), chats, Inbox documents, masking maps, the model call log, browser caches | Always |
+| `~/Library/Logs/Folio` | App logs, one file per hour | Always |
+| `~/Library/Preferences/app.folio.desktop.plist` | Open and Save panel settings | Always |
+| `~/Library/Caches/folio-ocr` | Text recognition cache | After reading an image or scanned PDF |
+| `~/Library/Caches/folio-updater` | The last downloaded update | After an update |
+| `~/Library/Caches/app.folio.desktop.ShipIt` | The update installer's state and logs | After an update |
+| `~/Library/Preferences/ByHost/app.folio.desktop.ShipIt.*.plist` | The update installer's settings | After an update |
+| `~/Library/Caches/app.folio.desktop`, `~/Library/HTTPStorages/app.folio.desktop` | The update installer's download cache | After an update |
+| `~/Library/Caches/app.folio.desktop.names`, `~/Library/Caches/app.folio.desktop.speech`, `~/Library/Caches/app.folio.desktop.auth` | Helper caches | Only if macOS made them |
+| `~/Library/Saved Application State/app.folio.desktop.savedState` | Window restoration | Only if macOS made it |
+| `app.folio.desktop*` in the hidden cache folder (`getconf DARWIN_USER_CACHE_DIR`) | Graphics shader caches, a few MB | Always |
+| `app.folio.desktop.ShipIt.*` and `folio-askpass-*` in `$TMPDIR` | An unpacked update (about 500 MB), the sync password socket | After an update, or a crash; macOS clears them in time |
+| `~/Library/Logs/DiagnosticReports` (`Folio…`, `folio-…`) | Crash and hang reports | Only after a crash |
+
+**In Terminal** (deletes permanently; paths that aren't there are skipped):
+
+```sh
+C="$(getconf DARWIN_USER_CACHE_DIR)"
+rm -rf ~/Library/Logs/Folio ~/Library/Caches/{folio-ocr,folio-updater} ~/Library/Caches/app.folio.desktop{,.ShipIt,.names,.speech,.auth} ~/Library/HTTPStorages/app.folio.desktop ~/Library/"Saved Application State"/app.folio.desktop.savedState
+[ -n "$C" ] && rm -rf "${C%/}"/app.folio.desktop{,.helper,.helper.GPU,.helper.Renderer,.helper.Plugin}
+find "$TMPDIR" -maxdepth 1 \( -name 'folio-askpass-*' -o -name 'app.folio.desktop.ShipIt.*' \) -exec rm -rf {} + 2>/dev/null
+find ~/Library/Logs/DiagnosticReports -maxdepth 2 \( -name 'Folio[-_ ]*' -o -name 'folio-[a-z]*-20*' \) -delete 2>/dev/null
+defaults delete app.folio.desktop 2>/dev/null; rm -f ~/Library/Preferences/app.folio.desktop.plist
+defaults -currentHost delete app.folio.desktop.ShipIt 2>/dev/null; find ~/Library/Preferences/ByHost -maxdepth 1 -name 'app.folio.desktop.ShipIt.*.plist' -delete 2>/dev/null
+```
+
+Then remove your settings and keys too, unless you'll reinstall Folio on this
+Mac and want to keep them:
+
+```sh
+D=~/Library/"Application Support"/Folio; [ -f "$D/folio.db" ] && rm -rf "$D"
+```
+
+**Or in Finder:** Go → Go to Folder… (⇧⌘G), paste each `~/Library` path from
+the table and move it to the Trash (in `ByHost` and `DiagnosticReports`, only
+the files starting with `app.folio.desktop`, `Folio` or `folio-`). The hidden
+cache and `$TMPDIR` items can stay; macOS clears them.
+
+## 4. System Settings (optional)
+
+- Remove Folio from General → Login Items if it is still listed.
+- If you skipped `tccutil`, turn Folio off in Privacy & Security → Microphone,
+  Files and Folders, and Local Network.
+- Folio's entry under Notifications may stay; it holds no data.
 
 ## 5. Inside your ledgers
 
-- **`.folio`**: a folder in the top of each ledger that holds your rules
-  for that ledger and Folio's settings for it (`rules.md`, and `config.json`
-  if you made one). The commands
-  above remove it from every ledger Folio opened; in a ledger kept in git,
-  commit that.
+These are part of your ledgers and are kept:
 
-These are part of your ledger and are kept:
+- **`.folio`** (hidden), with your rules for that ledger (`rules.md`) and
+  `config.json` if you made one. If you want it gone too, delete it in Finder
+  (⇧⌘. shows hidden files) and, in a git ledger, commit that. To list the
+  ledgers Folio opened, run this before removing your settings:
 
-- **Saved documents**: statements and receipts you saved into the ledger, in
-  its `documents` folder (or the folder named by `option "documents"`). Keep
-  them: your entries link to them.
-- **`.gitignore`** with a `.DS_Store` line, if Folio turned the folder into a
-  git repository.
+  ```sh
+  sqlite3 -init /dev/null -readonly -noheader -list ~/Library/"Application Support"/Folio/folio.db "SELECT path FROM ledgers"
+  ```
+
+- **`documents`**, the statements and receipts you saved; your entries link to
+  them.
+- **`.gitignore`**, and **`.gitattributes`** in an encrypted ledger (it tells
+  git-crypt what to encrypt).
+- A hidden `.<file>.folio-….tmp` file is left only if Folio quit while
+  applying changes. It can be the original of a file being replaced: check it
+  before you delete it.
 
 ### Encrypted ledgers
 
-When Folio set up encryption or unlocked a ledger, git-crypt stored the key in
-that ledger's `.git/git-crypt` folder and told git to run the git-crypt inside
-Folio.app. Once Folio is removed, git commands in that folder fail with
-`error: external filter '"…/Folio.app/…/git-crypt" clean' failed`. To keep
-using the ledger with git outside Folio,
-install git-crypt (for example `brew install git-crypt`) and point git at it:
+Folio 1.0.0 and later tell git to use the `git-crypt` installed on your Mac,
+so once Folio is gone, git needs it:
 
 ```sh
-cd /path/to/your/ledger
+brew install git-crypt
+```
+
+A git app that still can't find it needs Homebrew's `bin` folder on its PATH.
+If a ledger was last opened by a Folio older than 1.0.0, git fails with
+`error: external filter '"…/Folio.app/…/git-crypt" clean' failed`; then run, in
+that ledger:
+
+```sh
 git config filter.git-crypt.smudge '"git-crypt" smudge'
 git config filter.git-crypt.clean '"git-crypt" clean'
 git config diff.git-crypt.textconv '"git-crypt" diff'
 ```
 
-Keep the exported key file (`folio-git-crypt.key`) for as long as you need
-the encrypted ledger or its remote.
-
 ## Nothing else
 
-- Folio never uses the macOS Keychain, so there is nothing to remove there.
-- Folio never writes to `~/.gitconfig`, `~/.config` or `~/.ssh`. With an SSH
-  remote, git uses your Mac's own ssh and keys.
-- The bundled tools write nothing outside Folio's folders and your ledger: no
-  Python or Beancount caches, nothing in `~/.cache`, and nothing inside
-  Folio.app.
-- Nothing in `/Library`, `/Users/Shared`, `~/Library/Containers` or
-  `~/Library/LaunchAgents`.
-- On-device speech models used by voice input belong to macOS, which manages
-  them for all apps.
+Folio never uses the Keychain, never writes to `~/.gitconfig`, `~/.config` or
+`~/.ssh`, and leaves nothing in `/Library`, `~/Library/Containers` or
+`~/Library/LaunchAgents`. The bundled tools write nothing outside Folio's
+folders and your ledgers.
