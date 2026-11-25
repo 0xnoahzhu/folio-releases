@@ -14,11 +14,11 @@ Folio is a Mac app for keeping your personal accounts in plain-text
   export, PDF or receipt photo, and Filio drafts the entries.
 - **Review before anything is written.** Every change is checked with
   `bean-check` and saved as a git commit you can undo.
-- **Learns how you book things.** Categories come from your history and your
+- **Filio learns how you book things.** Categories come from your history and your
   choices, so Filio only asks about what's new.
 - **Fix many entries at once.** One answer, such as "all MeiTuan orders are
   delivery", updates every matching entry.
-- **Remembers what you tell it.** Accounts, people and preferences, per ledger,
+- **Filio remembers what you tell it.** Accounts, people and preferences, per ledger,
   editable in Settings.
 - **A whole month at once.** Add many statements together; Filio reads them in
   the background.
