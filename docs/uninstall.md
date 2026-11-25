@@ -9,7 +9,7 @@ exactly as they are.
 - If **Open Folio in the background at login** is on (Settings → Notifications),
   turn it off.
 - If a ledger uses encryption (git-crypt), make sure you still have its
-  exported key file (Folio suggests `~/Documents/folio-git-crypt.key`). It is
+  exported key file (by default Folio saves it as `~/Documents/folio-git-crypt.key`). It is
   your file: Folio never deletes it, and this page does not either. Without it
   an encrypted remote cannot be read. See also
   [encrypted ledgers](#encrypted-ledgers) below.
@@ -84,8 +84,9 @@ tccutil reset All app.folio.desktop
 
 ## 5. Inside your ledgers
 
-- **`.folio`**: a folder in the top of each ledger that holds Filio's rules for
-  that ledger (`rules.md`, and `config.json` if you made one). The commands
+- **`.folio`**: a folder in the top of each ledger that holds your rules
+  for that ledger and Folio's settings for it (`rules.md`, and `config.json`
+  if you made one). The commands
   above remove it from every ledger Folio opened; in a ledger kept in git,
   commit that.
 
